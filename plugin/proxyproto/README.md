@@ -95,8 +95,8 @@ A listener reachable exclusively by trusted proxies can preserve the old behavio
 }
 ~~~
 
-In this configuration, we only allow PROXY protocol headers from the specified CIDR ranges and reject
-connections without valid PROXY protocol headers from those sources:
+In this configuration, peers in the specified CIDR range may send PROXY protocol headers, while
+headers from peers outside that range are rejected:
 
 ~~~ corefile
 . {

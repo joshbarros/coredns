@@ -17,6 +17,24 @@ import (
 
 func init() { plugin.Register("proxyproto", setup) }
 
+func peerIP(upstream net.Addr) net.IP {
+	switch addr := upstream.(type) {
+	case *net.TCPAddr:
+		return addr.IP
+	case *net.UDPAddr:
+		return addr.IP
+	}
+
+	host, _, err := net.SplitHostPort(upstream.String())
+	if err != nil {
+		return nil
+	}
+	if i := strings.LastIndex(host, "%"); i >= 0 {
+		host = host[:i]
+	}
+	return net.ParseIP(host)
+}
+
 func setup(c *caddy.Controller) error {
 	config := dnsserver.GetConfig(c)
 	if config.ProxyProtoConnPolicy != nil {
@@ -92,11 +110,7 @@ func setup(c *caddy.Controller) error {
 		if len(allowedIPNets) == 0 {
 			return policy, nil
 		}
-		h, _, _ := net.SplitHostPort(connPolicyOptions.Upstream.String())
-		if i := strings.LastIndex(h, "%"); i >= 0 {
-			h = h[:i]
-		}
-		ip := net.ParseIP(h)
+		ip := peerIP(connPolicyOptions.Upstream)
 		if ip == nil {
 			return proxyproto.REJECT, nil
 		}

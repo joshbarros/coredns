@@ -193,8 +193,10 @@ func TestDefaultPolicyWithoutAllow(t *testing.T) {
 
 func TestAllowLinkLocalIPv6WithZone(t *testing.T) {
 	upstreams := map[string]net.Addr{
-		"tcp": &net.TCPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "eth0"},
-		"udp": &net.UDPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "eth0"},
+		"tcp":              &net.TCPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "eth0"},
+		"udp":              &net.UDPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "eth0"},
+		"tcp-bracket-zone": &net.TCPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "lan[0]"},
+		"udp-bracket-zone": &net.UDPAddr{IP: net.ParseIP("fe80::1"), Port: 53, Zone: "lan[0]"},
 	}
 	for name, upstream := range upstreams {
 		t.Run(name, func(t *testing.T) {
